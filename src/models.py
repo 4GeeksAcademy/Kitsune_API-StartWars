@@ -23,7 +23,7 @@ class User(db.Model):
             "email": self.email,
             "is_active":self.is_active,
             # do not serialize the password, its a security breach
-        }
+        }     
     
 class Planet(db.Model):
     __tablename__ = "planets"
@@ -61,24 +61,41 @@ class Character(db.Model):
         }
     
 
-class Favorite(db.Model):
-    __tablename__ = "favorite"
+class Favorite_Planets (db.Model):
+    __tablename__ = 'favorite_planets'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_relationship = db.relationship(User)
-    planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'), nullable=True)
+    planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'), nullable=False)
     planet_relationship = db.relationship(Planet)
-    character_id = db.Column(db.Integer, db.ForeignKey('people.id'), nullable=True)
-    character_relationship = db.relationship(Character)
-    
+
 
     def __repr__(self):
-        return f"Favorite {self.id} with user_id {self.user_id}, planet_id {self.planet_id}, character_id {self.character_id}"
+        return f"Favorite {self.id} with user_id {self.user_id}, planet_id {self.planet_id}"
 
     def serialize(self):
         return {
             "id": self.id,
             "user_id": self.user_id,
             "planet_id": self.planet_id,
-            "character_id": self.character_id,
         }
+
+
+class Favorite_People(db.Model):
+    __tablename__ = "favorite_people"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_relationship = db.relationship(User)
+    character_id = db.Column(db.Integer, db.ForeignKey('people.id'), nullable=False)
+    character_relationship = db.relationship(Character)
+
+    def __repr__ (self):
+        return "Al usuario {} le gusta el personaje {}".format(self.user_id, self.character_id)
+
+    def serialize(self):
+        return {
+            "id":self.id,
+            "user_id":self.user_id,
+            "character_id": self.character_id
+        }
+
