@@ -71,7 +71,7 @@ class Favorite_Planets (db.Model):
 
 
     def __repr__(self):
-        return f"Favorite {self.id} with user_id {self.user_id}, planet_id {self.planet_id}"
+        return f"Favorite {self.id} with user_id {self.user_id} planet_id {self.planet_id}"
 
     def serialize(self):
         return {

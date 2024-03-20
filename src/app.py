@@ -164,6 +164,7 @@ def favorites_user():
     favorite_people = db.session.query(Favorite_People, Character).join(Character).filter(Favorite_People.user_id == body['user_id']).all()
     favorite_planets_serialized = []
     favorite_people_serialized = []
+    print(favorite_planets)
     for favorite_item, planet_item in favorite_planets:
         favorite_planets_serialized.append({'favorite_planet_id': favorite_item.id, 'planet': planet_item.serialize()})
     for favorite_item, people_item in  favorite_people:
@@ -174,28 +175,33 @@ def favorites_user():
 def add_favorite_planet(planet_id):
     body = request.get_json(silent=True)
     planet = Planet.query.get(planet_id)
+    user = User.query.get(body["user_id"])
     if body is None:
         return jsonify("You must send information in the body."), 400
+    if user is None:
+        return jsonify("The user not found"), 404
     if planet is None:
         return jsonify("The planet not found."), 404
 
-    new_favorite_planet = Favorite_Planets(planet_id=planet_id)
+    new_favorite_planet = Favorite_Planets(planet_id=planet_id, user_id=body["user_id"])
     db.session.add(new_favorite_planet)
     db.session.commit()
 
     return jsonify("Favorite planet added successfully.")
 
-@app.route("/favorite/people/<int:people_id>", methods=["POST"])
-def add_favorite_people(people_id):
+@app.route("/favorite/people/<int:people_id>/<int:user_id>", methods=["POST"])
+def add_favorite_people(user_id, people_id):
     body = request.get_json(silent=True)
+    character = Character.query.get(people_id)
+    user = User.query.get(user_id)
     if body is None:
         return jsonify("You must send information in the body."), 400
-    
-    character = Character.query.get(people_id)
+    if user is None:
+        return jsonify("The user not found."), 404
     if character is None:
         return jsonify("The character not found."), 404
 
-    favorite_people = Favorite_People(character_id=people_id)
+    favorite_people = Favorite_People(user_id=user_id, character_id=people_id)
     db.session.add(favorite_people)
     db.session.commit()
     return jsonify("Favorite character added successfully.")
