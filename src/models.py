@@ -66,7 +66,7 @@ class Favorite_Planets (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_relationship = db.relationship(User)
-    planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'), nullable=False)
+    planet_id = db.Column(db.Integer, db.ForeignKey('planets.id', ondelete='CASCADE'), nullable=False)
     planet_relationship = db.relationship(Planet)
 
 
@@ -86,7 +86,7 @@ class Favorite_People(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_relationship = db.relationship(User)
-    character_id = db.Column(db.Integer, db.ForeignKey('people.id'), nullable=False)
+    character_id = db.Column(db.Integer, db.ForeignKey('people.id',  ondelete='CASCADE'), nullable=False)
     character_relationship = db.relationship(Character)
 
     def __repr__ (self):

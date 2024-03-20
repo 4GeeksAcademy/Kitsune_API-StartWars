@@ -113,11 +113,41 @@ def add_planet():
     db.session.commit()
     return jsonify ("Planet added successfully")
 
+@app.route("/planets/<int:id>", methods=["PUT"])
+def update_planet(id):
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify("You must send information in the body."), 400
+    if "name" not in body:
+        return jsonify("The 'name' field is required."), 400
+    update_planet = Planet.query.get(id)
+    update_planet.name=body["name"]
+    if "population" in body:
+        update_planet.population = body["population"]
+        
+    update_planet = Planet.query.get(id)
+    update_planet.name=body["name"]
+    db.session.add(update_planet)
+    db.session.commit()
+    return jsonify ("Planet update successfully")
+
 @app.route("/planets/<int:id>", methods=["GET"])
 def get_single_planet(id):
     planet = Planet.query.get(id)
     print(planet)
     return jsonify({"msg" : "ok", "planet":planet.serialize()})
+
+
+@app.route("/planets/<int:id>", methods=["DELETE"])
+def delete_planet(id):
+    erase_planet = Planet.query.get(id)
+    if erase_planet:
+        db.session.delete(erase_planet)
+        db.session.commit()
+        return jsonify("Favorite planet removed successfully.")
+    else:
+        return jsonify("No favorite planet was found for the specified ID."), 404
+
 
 #<-----------------------------------------------PEOPLE ROUTES------------------------------------------------------------>
 
@@ -142,10 +172,42 @@ def add_character():
     db.session.commit()
     return jsonify ("Character added successfully.")
 
+
 @app.route("/people/<int:id>", methods=["GET"])
 def get_single_people(id):
     character = Character.query.get(id)
     return jsonify({"msg" : "ok", "character":character.serialize()})
+
+    
+@app.route("/people/<int:id>", methods=["PUT"])
+def update_people(id):
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify("You must send information in the body."), 400
+    if "name" not in body:
+        return jsonify("The 'name' field is required."), 400
+    update_people = Character.query.get(id)
+    update_people.name=body["name"]
+    if "gender" in body:
+        update_people.gender = body["gender"]
+    elif "eyes_color" in body:
+        update_people.eyes_color = body["eyes_color"]
+        
+    update_people = Character.query.get(id)
+    update_people.name=body["name"]
+    db.session.add(update_people)
+    db.session.commit()
+    return jsonify ("Character update successfully")
+
+@app.route("/people/<int:id>", methods=["DELETE"])
+def delete_people(id):
+    erase_character = Character.query.get(id)
+    if erase_character:
+        db.session.delete(erase_character)
+        db.session.commit()
+        return jsonify("Favorite character removed successfully.")
+    else:
+        return jsonify("No favorite character was found for the specified ID."), 404
 
 #<-----------------------------------------------FAVORITES ROUTES------------------------------------------------------------>
 @app.route("/user/favorites", methods=["GET"])
